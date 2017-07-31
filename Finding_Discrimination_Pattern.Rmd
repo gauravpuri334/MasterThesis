@@ -1,0 +1,79 @@
+ 
+
+
+
+```{r}
+setwd("/Users/gauravpuri/Downloads/Master Thesis Readings /")
+credit <- read.csv("german_credit.csv", header = TRUE, sep = ",")
+
+#code to convert variable to factor
+credit$Creditability <-as.factor(credit$Creditability)
+
+#code to convert to numeric
+credit$Age..years. <-as.numeric(credit$Age..years.)
+
+#code to convert to decimal
+credit$Credit.Amount<-as.double(credit$Credit.Amount)
+
+credit$Credit.Amount<-as.factor(ifelse(credit$Credit.Amount<=2500,'0-2500',ifelse(credit$Credit.Amount<=5000,'2600-5000','5000+')))
+
+```
+
+Creating train and test datasets by divding the datasets into two parts.
+
+```{r}
+d = sort(sample(nrow(credit), nrow(credit)*.6))
+#select training sample
+train<-credit[d,]
+test<-credit[-d,]
+train<-subset(train,select=TRUE)
+
+```
+
+Train the model on linear regression for Creditability feature. 
+
+```{r}
+m<-glm(Creditability~.,data=train,family=binomial())
+```
+
+Calculating ROC Curve for model
+There is a strong literature based showing that the most optimal credit scoring cut off
+decisions can be made using ROC curves which plot the business implications of both the
+true positive rate of the model vs. false positive rate for each score cut off point (Beling et
+al, 2005)
+
+```{r}
+#load library
+library(ROCR)
+#score test data set
+test$score<-predict(m,type='response',test)
+View(test$score)
+pred<-prediction(test$score,test$Creditability)
+perf <- performance(pred,"tpr","fpr")
+plot(perf)
+```
+
+Calculating the top features on which creditability depends.
+
+```{r}
+#get results of terms in regression
+g<-predict(m,type='terms',test)
+#function to pick top 3 reasons
+#works by sorting coefficient terms in equation
+# and selecting top 3 in sort for each loan scored
+ftopk<- function(x,top=3){
+  res=names(x)[order(x, decreasing = TRUE)][1:top]
+  paste(res,collapse=";",sep="")
+}
+# Application of the function using the top 3 rows
+topk=apply(g,1,ftopk,top=3)
+```
+
+```{r}
+test<-cbind(test, topk)
+
+library(rpart)
+fit1<-rpart(Creditability~.,data=train)
+plot(fit1);text(fit1, font = 0.1 );
+```
+
