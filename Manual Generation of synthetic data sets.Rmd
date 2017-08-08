@@ -1,0 +1,72 @@
+---
+title: "Manual generation of synthetic data"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+install.packages("synthpop")
+library(synthpop)
+```
+
+loading te dataset
+
+```{r}
+setwd("/Users/gauravpuri/Downloads/MasterThesis/")
+dt <- read.csv("german_credit.csv", header = TRUE, sep = ",") 
+dt_summ <- summary(dt)
+View(dt_summ)
+```
+
+usage of synthpop
+
+```{r}
+trail1 <- syn(data = dt)
+syndt_summ <- summary(trail1$syn)
+View(syndt_summ)
+```
+
+view generated dataframe
+```{r}
+trail1$syn
+```
+
+Comparing synthetic data with original data
+
+```{r}
+compare(trail1, dt)
+```
+
+
+Another variation of compare function
+```{r}
+multi.compare(trail1, dt, var = "Creditability", by = c("Account.Balance", "Credit.Amount", "Sex...Marital.Status", "Age..years."), barplot.position = "dodge", cont.type = "hist", y.hist = "count", boxplot.point = TRUE)
+```
+
+Generating synthetic dataset using Gaussian Noise
+
+```{r}
+install.packages("RMThreshold")
+library(RMThreshold)
+```
+
+Load data set 
+```{r}
+dt_gnoise <- read.csv("german_credit.csv", header = TRUE, sep = ",")
+```
+
+Converting dataframe to matrix
+
+```{r}
+dt_mat <- as.numeric(sapply(dt_gnoise, as.numeric))
+```
+
+generating dataset using Gaussian noise 
+
+```{r}
+add.Gaussian.noise(dt_mat, mean = 0, stddev = 1, symm = TRUE)
+```
+
