@@ -37,11 +37,26 @@ trail1$syn
 Comparing synthetic data with original data
 
 ```{r}
-compare(trail1, dt)
+compare(trail1, dt, vars = "Sex...Marital.Status")
+```
+
+```{r}
+compare(trail1, dt, vars = "Age..years.")
+```
+
+```{r}
+compare(trail1, dt, vars = "Credit.Amount")
+```
+
+```{r}
+compare(trail1, dt, vars = "Account.Balance")
+compare(trail1, dt, vars = "Duration.of.Credit..month.")
+compare(trail1, dt, vars = "Payment.Status.of.Previous.Credit")
 ```
 
 
-Another variation of compare function
+Another variation of compare function.. 
+***DO NOT RUN THIS SECTION OF CODE***
 ```{r}
 multi.compare(trail1, dt, var = "Creditability", by = c("Account.Balance", "Credit.Amount", "Sex...Marital.Status", "Age..years."), barplot.position = "dodge", cont.type = "hist", y.hist = "count", boxplot.point = TRUE)
 ```
@@ -61,12 +76,12 @@ dt_gnoise <- read.csv("german_credit.csv", header = TRUE, sep = ",")
 Converting dataframe to matrix
 
 ```{r}
-dt_mat <- as.numeric(sapply(dt_gnoise, as.numeric))
+dt_mat <- as.matrix(sapply(dt_gnoise, as.numeric))
 ```
 
 generating dataset using Gaussian noise 
 
 ```{r}
-add.Gaussian.noise(dt_mat, mean = 0, stddev = 1, symm = TRUE)
+add.Gaussian.noise(dt_mat, mean = 0, stddev = 1, symm = FALSE)
 ```
 
